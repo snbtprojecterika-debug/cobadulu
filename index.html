@@ -26,13 +26,14 @@
     <div id="landingSection">
         <div class="header">
             <h1 style="color: #008489;">Latihan Soal SNBT PK</h1>
-            <p><b>Pengetahuan Kuantitatif - Latihan Aljabar</b></p>
+            <p><b>Aritmetika Sosial (Untung, Rugi, dan Diskon)</b></p>
         </div>
         <div class="card">
             <b>PERATURAN:</b>
             <ul>
                 <li>Dilarang menggunakan bantuan AI.</li>
                 <li>Dilarang pindah tab atau keluar dari halaman kuis.</li>
+                <li>Waktu pengerjaan: 1 menit per soal.</li>
             </ul>
         </div>
         <div class="card">
@@ -43,7 +44,7 @@
     </div>
 
     <div id="quizSection">
-        <div id="timerDisplay">Sisa Waktu: <span id="time">10:00</span></div>
+        <div id="timerDisplay">Sisa Waktu: <span id="time">00:00</span></div>
         <div id="isiSoal"></div>
         <button id="btnSelesai" class="btn" onclick="hitungDanTampilkanHasil()">SELESAI & KIRIM JAWABAN</button>
     </div>
@@ -64,90 +65,16 @@
     const scriptURL = 'https://script.google.com/macros/s/AKfycbyLjT05lez8S-JIKnR4kgWhYS_vlmQHGhMY2rVnvkVIc3pzPuML406uH1J8GYjttowcFA/exec';
 
     const soalData = [
-        { q: "Jika 3x + 5 = 20, maka nilai dari x adalah...", a: ["3", "4", "5", "6"], k: 2 },
-        { q: "Pola bilangan: 2, 5, 10, 17, ... Bilangan selanjutnya adalah...", a: ["24", "25", "26", "27"], k: 2 },
-        { q: "Nilai dari 2^5 adalah...", a: ["16", "24", "32", "64"], k: 2 },
-        { q: "Peluang munculnya mata dadu bilangan genap pada satu kali lemparan adalah...", a: ["1/6", "1/3", "1/2", "2/3"], k: 2 },
-        { q: "Rata-rata dari 4, 6, 8, dan 10 adalah...", a: ["6", "7", "8", "9"], k: 1 },
-        { q: "Jika a = 3 dan b = 4, maka nilai a^2 + b^2 adalah...", a: ["7", "12", "25", "49"], k: 2 },
-        { q: "Harga 2 buku adalah Rp10.000. Harga 5 buku yang sama adalah...", a: ["Rp20.000", "Rp25.000", "Rp30.000", "Rp35.000"], k: 1 },
-        { q: "Perbandingan x : y adalah 2 : 3. Jika x = 10, maka y adalah...", a: ["12", "15", "18", "20"], k: 1 },
-        { q: "Luas sebuah persegi dengan sisi 6 cm adalah...", a: ["12 cm²", "24 cm²", "36 cm²", "48 cm²"], k: 2 },
-        { q: "Himpunan penyelesaian dari |x - 3| = 2 adalah...", a: ["{1, 5}", "{2, 3}", "{3, 5}", "{1, 3}"], k: 0 }
-    ];
-
-    let timer;
-    let tabPindahCount = 0;
-
-    window.onblur = function() {
-        if (document.getElementById('quizSection').style.display === 'block') {
-            tabPindahCount++;
-            if (tabPindahCount >= 2) {
-                alert("PELANGGARAN: Anda keluar halaman. Kuis selesai otomatis!");
-                hitungDanTampilkanHasil();
-            } else {
-                alert("PERINGATAN: Dilarang keluar dari halaman kuis!");
-            }
-        }
-    };
-
-    function mulaiKuis() {
-        const nama = document.getElementById('userName').value;
-        if (!nama.trim()) { alert("Isi nama dulu!"); return; }
-        document.getElementById('landingSection').style.display = 'none';
-        document.getElementById('quizSection').style.display = 'block';
-
-        let html = "";
-        soalData.forEach((s, i) => {
-            html += `<div class='card'><b>${i+1}. ${s.q}</b><br>`;
-            s.a.forEach((opt, idx) => {
-                html += `<label class='option'><input type='radio' name='q${i}' value='${idx}'> ${String.fromCharCode(65+idx)}. ${opt}</label>`;
-            });
-            html += `</div>`;
-        });
-        document.getElementById('isiSoal').innerHTML = html;
-
-        let timeLeft = 600;
-        timer = setInterval(() => {
-            timeLeft--;
-            let min = Math.floor(timeLeft / 60);
-            let sec = timeLeft % 60;
-            document.getElementById('time').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
-            if (timeLeft <= 0) { clearInterval(timer); hitungDanTampilkanHasil(); }
-        }, 1000);
-    }
-
-    function hitungDanTampilkanHasil() {
-        clearInterval(timer);
-        window.onblur = null; 
-
-        const nama = document.getElementById('userName').value;
-        let nomorBenar = [];
-        let nomorSalah = [];
-
-        soalData.forEach((s, i) => {
-            const rbg = document.getElementsByName('q' + i);
-            let terpilih = -1;
-            for (let rb of rbg) { if (rb.checked) terpilih = parseInt(rb.value); }
-            if (terpilih === s.k) { nomorBenar.push(i + 1); } else { nomorSalah.push(i + 1); }
-        });
-
-        const totalSkor = (nomorBenar.length / soalData.length) * 100;
-        document.getElementById('displaySkor').innerText = totalSkor;
-        document.getElementById('quizSection').style.display = 'none';
-        document.getElementById('resultSection').style.display = 'block';
-        document.getElementById('resNama').innerText = nama;
-        document.getElementById('detailList').innerHTML = 
-            `✅ Benar: ${nomorBenar.join(", ") || "-"}<br>❌ Salah: ${nomorSalah.join(", ") || "-"}`;
-
-        fetch(scriptURL, { 
-            method: 'POST', 
-            mode: 'no-cors',
-            body: JSON.stringify({ nama: nama, skor: totalSkor })
-        }).then(() => {
-            document.getElementById('statusKirim').innerText = "Data berhasil disimpan!";
-        });
-    }
-</script>
-</body>
-</html>
+        { q: "Seorang pedagang membeli sepeda seharga Rp1.200.000,00 dan menjualnya kembali dengan harga Rp1.500.000,00. Persentase keuntungannya adalah...", a: ["15%", "20%", "25%", "30%", "35%"], k: 2 },
+        { q: "Andi menjual handphone seharga Rp1.800.000,00 dan rugi 10%. Harga beli awalnya adalah...", a: ["Rp1.980.000,00", "Rp2.000.000,00", "Rp2.100.000,00", "Rp2.200.000,00", "Rp2.300.000,00"], k: 1 },
+        { q: "Toko diskon kemeja 20%. Jika untung 25% dari modal setelah diskon dan harga label Rp200.000, berapakah harga modal?", a: ["Rp120.000,00", "Rp125.000,00", "Rp128.000,00", "Rp150.000,00", "Rp160.000,00"], k: 2 },
+        { q: "Pak Budi membeli 2 lusin buku seharga Rp96.000. Jika ingin untung 20%, berapa harga jual per buku?", a: ["Rp4.000,00", "Rp4.500,00", "Rp4.800,00", "Rp5.000,00", "Rp5.200,00"], k: 2 },
+        { q: "Campuran 3kg beras A (Rp10rb/kg) dan 2kg beras B (Rp15rb/kg) dijual Rp13.200/kg. Persentase untungnya?", a: ["8%", "10%", "12%", "15%", "18%"], k: 1 },
+        { q: "Budi jual 2 barang @Rp1.200.000. Barang 1 untung 20%, barang 2 rugi 20%. Secara keseluruhan Budi...", a: ["Impas", "Rugi Rp100.000,00", "Untung Rp100.000,00", "Rugi Rp50.000,00", "Untung Rp50.000,00"], k: 1 },
+        { q: "Barang dijual dengan keuntungan setara harga beli 20 barang pada penjualan 100 barang. Persentase untungnya?", a: ["15%", "20%", "25%", "30%", "35%"], k: 1 },
+        { q: "Timbangan rusak: 1kg tertera sebenarnya 800g. Jika dijual sesuai harga beli per kg, persentase untungnya?", a: ["20%", "25%", "30%", "15%", "10%"], k: 1 },
+        { q: "Agen A ke B untung 10%, B ke C untung 20%. Jika C membayar Rp132.000, berapa harga awal di agen A?", a: ["Rp90.000,00", "Rp100.000,00", "Rp110.000,00", "Rp120.000,00", "Rp125.000,00"], k: 1 },
+        { q: "Toko beli barang seharga 60% harga jual normal. Promo 'Beli 4 Gratis 1'. Persentase keuntungan toko?", a: ["25%", "30%", "33,33%", "40%", "45%"], k: 2 },
+        { q: "Pak Ali jual rumah untung 15%. Selisih harga jual dan beli Rp45.000.000. Berapa harga jualnya?", a: ["Rp300.000.000", "Rp330.000.000", "Rp345.000.000", "Rp360.000.000", "Rp375.000.000"], k: 2 },
+        { q: "Beli 100 telur @Rp2.000. 20 butir pecah. Ingin untung 20% total modal, harga jual per butir sisa?", a: ["Rp2.500,00", "Rp2.800,00", "Rp3.000,00", "Rp3.200,00", "Rp3.500,00"], k: 2 },
+        { q: "Selisih harga jual untung 10% dan rugi 10% adalah Rp60.000. Harga beli barang tersebut?", a: ["Rp200.000,00", "Rp250.000,00", "Rp300.000,00", "Rp350.000,00", "Rp400.000,
