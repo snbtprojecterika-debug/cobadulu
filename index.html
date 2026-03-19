@@ -31,9 +31,8 @@
         <div class="card">
             <b>PERATURAN:</b>
             <ul>
-                <li>Terdapat 10 soal pilihan ganda.</li>
-                <li>Waktu pengerjaan: 10 menit.</li>
-                <li><b>DILARANG</b> pindah tab atau membuka AI (Sistem akan mendeteksi).</li>
+                <li>Dilarang menggunakan bantuan AI.</li>
+                <li>Dilarang pindah tab atau keluar dari halaman kuis.</li>
             </ul>
         </div>
         <div class="card">
@@ -55,7 +54,7 @@
             <p>Halo <span id="resNama" style="font-weight: bold;"></span>, skor kamu adalah:</p>
             <div class="score-number" id="displaySkor">0</div>
             <div class="detail-box" id="detailList"></div>
-            <p id="statusKirim" style="color: #888; font-style: italic; margin-top: 15px;">Mengirim data ke Google Sheets...</p>
+            <p id="statusKirim" style="color: #888; font-style: italic; margin-top: 15px;">Mengirim data...</p>
             <button class="btn" style="background: #666; margin-top: 20px;" onclick="location.reload()">COBA LAGI</button>
         </div>
     </div>
@@ -80,15 +79,14 @@
     let timer;
     let tabPindahCount = 0;
 
-    // FITUR ANTI CONTEK: Deteksi pindah tab
     window.onblur = function() {
         if (document.getElementById('quizSection').style.display === 'block') {
             tabPindahCount++;
             if (tabPindahCount >= 2) {
-                alert("PELANGGARAN: Anda keluar halaman lebih dari sekali. Kuis dihentikan!");
+                alert("PELANGGARAN: Anda keluar halaman. Kuis selesai otomatis!");
                 hitungDanTampilkanHasil();
             } else {
-                alert("PERINGATAN: Jangan keluar dari halaman kuis!");
+                alert("PERINGATAN: Dilarang keluar dari halaman kuis!");
             }
         }
     };
@@ -121,8 +119,7 @@
 
     function hitungDanTampilkanHasil() {
         clearInterval(timer);
-        // Matikan deteksi blur saat hasil ditampilkan
-        window.onblur = null;
+        window.onblur = null; 
 
         const nama = document.getElementById('userName').value;
         let nomorBenar = [];
@@ -131,48 +128,26 @@
         soalData.forEach((s, i) => {
             const rbg = document.getElementsByName('q' + i);
             let terpilih = -1;
-            for (let rb of rbg) {
-                if (rb.checked) terpilih = parseInt(rb.value);
-            }
-            if (terpilih === s.k) {
-                nomorBenar.push(i + 1);
-            } else {
-                nomorSalah.push(i + 1);
-            }
+            for (let rb of rbg) { if (rb.checked) terpilih = parseInt(rb.value); }
+            if (terpilih === s.k) { nomorBenar.push(i + 1); } else { nomorSalah.push(i + 1); }
         });
 
         const totalSkor = (nomorBenar.length / soalData.length) * 100;
-        const scoreElement = document.getElementById('displaySkor');
-        scoreElement.style.color = totalSkor < 80 ? "#e74c3c" : "#008489";
-        scoreElement.innerText = totalSkor;
-
+        document.getElementById('displaySkor').innerText = totalSkor;
         document.getElementById('quizSection').style.display = 'none';
         document.getElementById('resultSection').style.display = 'block';
         document.getElementById('resNama').innerText = nama;
         document.getElementById('detailList').innerHTML = 
-            `✅ <b>Nomor Benar:</b> ${nomorBenar.join(", ") || "-"}<br><br>` +
-            `❌ <b>Nomor Salah:</b> ${nomorSalah.join(", ") || "-"}`;
+            `✅ Benar: ${nomorBenar.join(", ") || "-"}<br>❌ Salah: ${nomorSalah.join(", ") || "-"}`;
 
-        // Mengirim data
         fetch(scriptURL, { 
             method: 'POST', 
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nama: nama,
-                skor: totalSkor,
-                nomorBenar: nomorBenar.join(", "),
-                nomorSalah: nomorSalah.join(", ")
-            })
+            body: JSON.stringify({ nama: nama, skor: totalSkor })
         }).then(() => {
-            document.getElementById('statusKirim').innerText = "Data berhasil dikirim!";
-            document.getElementById('statusKirim').style.color = "green";
-        }).catch(() => {
-            document.getElementById('statusKirim').innerText = "Gagal mengirim data.";
-            document.getElementById('statusKirim').style.color = "red";
+            document.getElementById('statusKirim').innerText = "Data berhasil disimpan!";
         });
     }
 </script>
-
 </body>
 </html>
