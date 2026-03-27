@@ -3,125 +3,272 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Latihan Soal SNBT PK</title>
+    <title>Latihan SNBT: Fungsi Dasar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; padding: 20px; color: #333; }
-        .container { max-width: 700px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .header { text-align: center; margin-bottom: 25px; }
-        .card { border: 1.5px solid #a2d9db; border-radius: 10px; margin-bottom: 20px; padding: 15px; }
-        #timerDisplay { font-size: 20px; font-weight: bold; color: #e74c3c; text-align: center; margin-bottom: 15px; }
-        .btn { width: 100%; padding: 15px; background: #008489; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; transition: 0.3s; }
-        .btn:hover { background: #006a6e; transform: translateY(-2px); }
-        #quizSection, #resultSection { display: none; }
-        .option { display: block; padding: 12px; border: 1px solid #eee; margin-top: 8px; border-radius: 8px; cursor: pointer; }
-        .option:hover { background: #f0fafa; border-color: #008489; }
-        .score-box { text-align: center; padding: 40px 20px; }
-        .score-number { font-size: 72px; font-weight: bold; margin: 20px 0; }
-        .detail-box { text-align: left; background: #f9f9f9; padding: 15px; border-radius: 8px; margin-top: 20px; font-size: 14px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        .custom-shadow { 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025); 
+        }
+
+        .option-input:checked + .option-label { 
+            border-color: #3b82f6; 
+            background-color: #eff6ff; 
+            box-shadow: 0 0 0 2px #3b82f6; 
+        }
+
+        #modal-overlay { 
+            backdrop-filter: blur(4px); 
+            display: none; 
+        }
+
+        .math-content { 
+            font-size: 1.1em; 
+        }
+
+        /* Custom Scrollbar for the questions list */
+        #isiSoal::-webkit-scrollbar {
+            width: 6px;
+        }
+        #isiSoal::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        #isiSoal::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8">
 
-<div class="container">
-    <div id="landingSection">
-        <div class="header">
-            <h1 style="color: #008489;">Latihan Soal SNBT PK</h1>
-            <p><b>Aritmatika Sosial (Untung, Rugi, dan Diskon)</b></p>
+    <div class="max-w-3xl w-full">
+        <div id="app-container" class="bg-white rounded-3xl custom-shadow overflow-hidden">
+            
+            <!-- Header Section -->
+            <div id="header-bar" class="bg-indigo-600 p-6 text-white text-center">
+                <h1 class="text-2xl font-extrabold tracking-tight uppercase">Latihan Soal SNBT</h1>
+                <p class="text-indigo-100 text-sm font-medium mt-1 uppercase tracking-widest">Fungsi Dasar: Domain, Kodomain, Range, Operasi, & Grafik</p>
+            </div>
+
+            <!-- Landing Section -->
+            <div id="landingSection" class="p-8">
+                <div class="space-y-6">
+                    <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl">
+                        <div class="flex">
+                            <div class="ml-3">
+                                <p class="text-sm text-amber-700 font-bold uppercase">Peraturan Pengerjaan:</p>
+                                <ul class="mt-1 text-sm text-amber-700 list-disc list-inside">
+                                    <li>Terdapat <b>30 soal</b> pilihan ganda standar SNBT</li>
+                                    <li>Waktu pengerjaan: <b>30 Menit</b></li>
+                                    <li>Dilarang berpindah tab selama kuis berlangsung</li>
+                                    <li>Hasil akan otomatis terkirim jika waktu habis atau melanggar aturan tab</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label for="userName" class="block text-sm font-bold text-gray-700">Nama Lengkap:</label>
+                        <input type="text" id="userName" class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500 transition-all outline-none" placeholder="Masukkan nama Anda...">
+                    </div>
+
+                    <button onclick="mulaiKuis()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg transform active:scale-95 transition-all text-lg tracking-wide">
+                        MULAI KUIS
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quiz Section -->
+            <div id="quizSection" class="hidden">
+                <div class="bg-gray-50 border-b border-gray-100 p-4 flex flex-col sm:flex-row justify-between items-center gap-4 sticky top-0 z-10">
+                    <div class="flex items-center space-x-2 bg-white px-4 py-2 rounded-full shadow-sm border border-gray-200">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span id="time" class="font-mono text-xl font-bold text-red-600">30:00</span>
+                    </div>
+                    <div class="w-full sm:w-1/2 bg-gray-200 rounded-full h-2.5">
+                        <div id="progressBar" class="bg-indigo-600 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div id="isiSoal" class="p-6 space-y-8 max-h-[60vh] overflow-y-auto math-content"></div>
+
+                <div class="p-6 border-t border-gray-100">
+                    <button id="btnSelesai" onclick="tampilkanKonfirmasiSelesai()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 rounded-xl shadow-lg transition-all text-lg">
+                        SELESAI & KIRIM JAWABAN
+                    </button>
+                </div>
+            </div>
+
+            <!-- Result Section -->
+            <div id="resultSection" class="hidden p-8 text-center space-y-6">
+                <div class="flex justify-center">
+                    <div id="scoreRing" class="relative w-40 h-40 flex items-center justify-center rounded-full border-8 border-indigo-100">
+                        <span id="displaySkor" class="text-5xl font-extrabold text-indigo-600">0</span>
+                    </div>
+                </div>
+                <div class="space-y-2">
+                    <h2 class="text-2xl font-bold text-gray-800">Selesai, <span id="resNama" class="text-indigo-600"></span>!</h2>
+                    <p class="text-gray-500">Hasil latihan Anda pada materi Fungsi Dasar telah dihitung.</p>
+                </div>
+                <div id="detailList" class="text-left bg-gray-50 p-4 rounded-xl border border-gray-200 text-sm space-y-2"></div>
+                <div class="flex flex-col space-y-3 pt-4">
+                    <p id="statusKirim" class="text-xs font-semibold animate-pulse text-gray-400 italic">Menyimpan hasil ke cloud...</p>
+                    <button onclick="location.reload()" class="bg-gray-800 text-white font-bold py-3 rounded-xl hover:bg-black transition-all">COBA LAGI</button>
+                </div>
+            </div>
         </div>
-        <div class="card">
-            <b>PERATURAN:</b>
-            <ul>
-                <li>Terdapat 20 soal pilihan ganda.</li>
-                <li>Waktu pengerjaan: 20 menit (1 menit per soal).</li>
-                <li>Dilarang menggunakan bantuan AI atau membuka tab lain.</li>
-            </ul>
-        </div>
-        <div class="card">
-            <label><b>NAMA LENGKAP:</b></label><br><br>
-            <input type="text" id="userName" style="width:95%; padding:12px; border: 1px solid #ddd; border-radius: 6px;" placeholder="Ketik nama Anda...">
-        </div>
-        <button class="btn" onclick="mulaiKuis()">MULAI SEKARANG</button>
     </div>
 
-    <div id="quizSection">
-        <div id="timerDisplay">Sisa Waktu: <span id="time">20:00</span></div>
-        <div id="isiSoal"></div>
-        <button id="btnSelesai" class="btn" onclick="hitungDanTampilkanHasil()">SELESAI & KIRIM JAWABAN</button>
-    </div>
-
-    <div id="resultSection">
-        <div class="score-box">
-            <h2 style="color: #008489;">Hasil Latihan Anda</h2>
-            <p>Halo <span id="resNama" style="font-weight: bold;"></span>, skor Anda adalah:</p>
-            <div class="score-number" id="displaySkor">0</div>
-            <div class="detail-box" id="detailList"></div>
-            <p id="statusKirim" style="color: #888; font-style: italic; margin-top: 15px;">Mengirim data ke Google Sheets...</p>
-            <button class="btn" style="background: #666; margin-top: 20px;" onclick="location.reload()">COBA LAGI</button>
+    <!-- Modal System -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/50 z-[100] flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl transform transition-all scale-100">
+            <div id="modal-icon" class="mb-4 flex justify-center"></div>
+            <h3 id="modal-title" class="text-xl font-bold text-gray-900 text-center mb-2"></h3>
+            <p id="modal-desc" class="text-gray-500 text-center text-sm mb-6"></p>
+            <div id="modal-actions" class="flex space-x-3">
+                <button id="modal-btn-primary" class="flex-1 py-2 rounded-lg font-bold text-white transition-all"></button>
+            </div>
         </div>
     </div>
-</div>
 
 <script>
-    // GANTI URL DI BAWAH INI DENGAN WEB APP URL DARI DEPLOYMENT GOOGLE APPS SCRIPT BARU ANDA
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbwtZrYT9fkE9vRmg-nnCqQdWRQdiHsRnlxnU9mNDmiy8EnkpDVrMpakeXDMtfyra0Cp8A/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbwDph12pUOoamxrnQ3ZUvFmScY4mr3lm6lbJQHoVcLqcVFfV7IdYs6NfQCMYsCeOfky/exec';
 
     const soalData = [
-        { q: "Seorang pedagang membeli sepeda seharga Rp1.200.000,00 dan menjualnya kembali dengan harga Rp1.500.000,00. Persentase keuntungannya adalah...", a: ["15%", "20%", "25%", "30%", "35%"], k: 2 },
-        { q: "Andi menjual handphone miliknya seharga Rp1.800.000,00 dan rugi 10%. Harga beli awalnya adalah...", a: ["Rp1.980.000,00", "Rp2.000.000,00", "Rp2.100.000,00", "Rp2.200.000,00", "Rp2.300.000,00"], k: 1 },
-        { q: "Diskon kemeja 20%. Jika untung 25% dari modal setelah diskon dan harga label Rp200.000, berapakah harga modal?", a: ["Rp120.000,00", "Rp125.000,00", "Rp128.000,00", "Rp150.000,00", "Rp160.000,00"], k: 2 },
-        { q: "Pak Budi membeli 2 lusin buku seharga Rp96.000. Jika ingin untung 20%, berapa harga jual per buku?", a: ["Rp4.000,00", "Rp4.500,00", "Rp4.800,00", "Rp5.000,00", "Rp5.200,00"], k: 2 },
-        { q: "Campuran 3kg beras A (Rp10rb/kg) dan 2kg beras B (Rp15rb/kg) dijual Rp13.200/kg. Persentase untungnya?", a: ["8%", "10%", "12%", "15%", "18%"], k: 1 },
-        { q: "Budi jual 2 barang @Rp1.200.000. Barang 1 untung 20%, barang 2 rugi 20%. Secara keseluruhan Budi...", a: ["Impas", "Rugi Rp100.000,00", "Untung Rp100.000,00", "Rugi Rp50.000,00", "Untung Rp50.000,00"], k: 1 },
-        { q: "Barang dijual dengan keuntungan setara harga beli 20 barang pada penjualan 100 barang. Persentase untungnya?", a: ["15%", "20%", "25%", "30%", "35%"], k: 1 },
-        { q: "Timbangan rusak: 1kg tertera sebenarnya 800g. Jika dijual sesuai harga beli per kg, persentase untungnya?", a: ["20%", "25%", "30%", "15%", "10%"], k: 1 },
-        { q: "Agen A ke B untung 10%, B ke C untung 20%. Jika C membayar Rp132.000, berapa harga awal di agen A?", a: ["Rp90.000,00", "Rp100.000,00", "Rp110.000,00", "Rp120.000,00", "Rp125.000,00"], k: 1 },
-        { q: "Toko beli barang seharga 60% harga jual normal. Promo 'Beli 4 Gratis 1'. Persentase keuntungan toko?", a: ["25%", "30%", "33,33%", "40%", "45%"], k: 2 },
-        { q: "Pak Ali jual rumah untung 15%. Selisih harga jual dan beli Rp45.000.000. Berapa harga jualnya?", a: ["Rp300.000.000", "Rp330.000.000", "Rp345.000.000", "Rp360.000.000", "Rp375.000.000"], k: 2 },
-        { q: "Beli 100 telur @Rp2.000. 20 butir pecah. Ingin untung 20% total modal, harga jual per butir sisa?", a: ["Rp2.500,00", "Rp2.800,00", "Rp3.000,00", "Rp3.200,00", "Rp3.500,00"], k: 2 },
-        { q: "Selisih harga jual untung 10% dan rugi 10% adalah Rp60.000. Harga beli barang tersebut?", a: ["Rp200.000,00", "Rp250.000,00", "Rp300.000,00", "Rp350.000,00", "Rp400.000,00"], k: 2 },
-        { q: "Beli tas Rp250rb. Ingin diskon 20% tapi tetap untung 20% dari harga beli. Harga label?", a: ["Rp350.000,00", "Rp375.000,00", "Rp400.000,00", "Rp425.000,00", "Rp450.000,00"], k: 1 },
-        { q: "Dari 50 kemeja, 30 untung 20% dan 20 rugi 10%. Persentase untung/rugi total?", a: ["Untung 5%", "Untung 8%", "Untung 10%", "Impas", "Rugi 2%"], k: 1 },
-        { q: "Omset 10jt, biaya op 3jt, modal bahan 5jt. Persentase untung bersih dari modal bahan baku?", a: ["20%", "30%", "40%", "50%", "60%"], k: 2 },
-        { q: "Untung tetap Rp5.000/sisir. Margin untung 25% dari harga beli. Berapa harga jualnya?", a: ["Rp20.000,00", "Rp22.500,00", "Rp25.000,00", "Rp30.000,00", "Rp35.000,00"], k: 2 },
-        { q: "X dan Y beli total Rp800rb. X rugi 15%, Y untung 20%. Jika total penjualan impas, harga beli Y?", a: ["Rp300.000,00", "Rp342.857,00", "Rp400.000,00", "Rp450.000,00", "Rp500.000,00"], k: 1 },
-        { q: "Dua jam @Rp600rb. Jam 1 untung 25% harga jual. Jam 2 untung 25% harga beli. Selisih harga beli keduanya?", a: ["Rp15.000,00", "Rp30.000,00", "Rp45.000,00", "Rp60.000,00", "Rp75.000,00"], k: 1 },
-        { q: "Jika harga beli barang A naik 20% dan harga jual juga naik 20%, maka persentase untungnya...", a: ["Naik", "Turun", "Tetap", "Tak tentu", "Menjadi nol"], k: 2 }
+        { q: "Jika fungsi \\(f:A \\rightarrow B\\) dinyatakan dengan diagram panah, maka himpunan semua nilai di A yang memiliki pasangan di B disebut...", a: ["Kodomain", "Range", "Domain", "Relasi", "Notasi"], k: 2 },
+        { q: "Himpunan semua nilai y atau hasil dari pemetaan fungsi disebut...", a: ["Domain", "Daerah Kawan", "Kodomain", "Daerah Hasil (Range)", "Variabel Bebas"], k: 3 },
+        { q: "Diketahui fungsi \\(f(x) = \\frac{1}{x-3}\\). Domain dari fungsi tersebut agar terdefinisi pada bilangan real adalah...", a: ["\\(\\{x|x \\in \\mathbb{R}\\}\\)", "\\(\\{x|x \\ne 0, x \\in \\mathbb{R}\\}\\)", "\\(\\{x|x > 3, x \\in \\mathbb{R}\\}\\)", "\\(\\{x|x \\ne 3, x \\in \\mathbb{R}\\}\\)", "\\(\\{x|x \\ne -3, x \\in \\mathbb{R}\\}\\)"], k: 3 },
+        { q: "Range dari fungsi \\(f(x) = x^2\\) untuk domain \\(D_f = \\{-1, 0, 1, 2\\}\\) adalah...", a: ["\\(\\{0, 1, 4\\}\\)", "\\(\\{1, 0, 1, 4\\}\\)", "\\(\\{-1, 0, 1, 2\\}\\)", "\\(\\{1, 4, 9\\}\\)", "\\(\\{0, 1, 2\\}\\)"], k: 0 },
+        { q: "Manakah di bawah ini yang merupakan penyajian fungsi dalam bentuk himpunan pasangan berurutan?", a: ["\\(f(x) = 2x + 1\\)", "\\(\\{(1,2), (2,4), (3,6)\\}\\)", "Diagram lingkaran", "Tabel distribusi frekuensi", "Persamaan linear"], k: 1 },
+        { q: "Jika \\(A = \\{1, 2\\}\\) dan \\(B = \\{a, b\\}\\), manakah himpunan pasangan berurutan yang merupakan fungsi dari A ke B?", a: ["\\(\\{(1, a), (1, b)\\}\\)", "\\(\\{(1, a), (2, a)\\}\\)", "\\(\\{(1, a), (2, a), (2, b)\\}\\)", "\\(\\{(a, 1), (b, 2)\\}\\)", "\\(\\{(1, b)\\}\\)"], k: 1 },
+        { q: "Diketahui fungsi \\(f(x) = 3x - 5\\). Nilai dari \\(f(4)\\) adalah...", a: ["7", "12", "17", "-1", "2"], k: 0 },
+        { q: "Jika \\(f(x) = x^2 + 2x - 8\\), maka nilai \\(f(-3)\\) adalah...", a: ["7", "-5", "-11", "23", "0"], k: 1 },
+        { q: "Diberikan \\(g(x) = \\frac{2x+1}{x-2}\\). Nilai dari \\(g(3)\\) adalah...", a: ["1", "3", "5", "7", "9"], k: 3 },
+        { q: "Jika \\(f(a) = 10\\) untuk fungsi \\(f(x) = 2x + 4\\), maka nilai a adalah...", a: ["2", "3", "4", "5", "6"], k: 1 },
+        { q: "Diketahui \\(f(x) = x + 2\\) dan \\(g(x) = 2x - 1\\). Hasil dari \\((f+g)(x)\\) adalah...", a: ["\\(3x + 1\\)", "\\(3x + 3\\)", "\\(x + 1\\)", "\\(2x^2 + 3x - 2\\)", "\\(x - 3\\)"], k: 0 },
+        { q: "Jika \\(f(x) = 5x\\) dan \\(g(x) = x^2\\), maka \\((f \\cdot g)(x)\\) adalah...", a: ["\\(5x^2\\)", "\\(x^2 + 5x\\)", "\\(5x^3\\)", "\\(25x^2\\)", "\\(5/x\\)"], k: 2 },
+        { q: "Diketahui \\(h(x) = x^2 - 4\\) dan \\(k(x) = x - 2\\). Hasil dari \\((\\frac{h}{k})(x)\\) untuk \\(x \\ne 2\\) adalah...", a: ["\\(x - 2\\)", "\\(x + 2\\)", "\\(x^2 + 2\\)", "\\(2x\\)", "4"], k: 1 },
+        { q: "Jika \\(f(x) = 10 - 2x\\), maka nilai \\((f - f)(x)\\) adalah...", a: ["\\(20 - 4x\\)", "0", "\\(10 - 4x\\)", "4x", "\\(2x - 10\\)"], k: 1 },
+        { q: "Hasil dari \\(2f(x) + g(x)\\) jika \\(f(x) = x + 1\\) dan \\(g(x) = 3x\\) adalah...", a: ["\\(4x + 1\\)", "\\(5x + 2\\)", "\\(5x + 1\\)", "\\(6x + 2\\)", "\\(2x + 2\\)"], k: 1 },
+        { q: "Titik potong grafik fungsi \\(f(x) = 2x - 6\\) dengan sumbu Y adalah...", a: ["(3, 0)", "(0, 3)", "(0, -6)", "(-6, 0)", "(6, 0)"], k: 2 },
+        { q: "Grafik fungsi kuadrat \\(f(x) = x^2 - 4x + 4\\) akan...", a: ["Memotong sumbu X di dua titik berbeda", "Menyinggung sumbu X di satu titik", "Tidak memotong sumbu X", "Memotong sumbu Y di titik negatif", "Terbuka ke bawah"], k: 1 },
+        { q: "Jika grafik fungsi \\(f(x) = ax + b\\) melalui titik (0, 0), maka nilai b haruslah...", a: ["a", "1", "-1", "0", "Tidak dapat ditentukan"], k: 3 },
+        { q: "Sumbu simetri dari grafik fungsi \\(f(x) = x^2 - 6x + 5\\) adalah...", a: ["\\(x = 3\\)", "\\(x = -3\\)", "\\(x = 6\\)", "\\(x = 5\\)", "\\(x = 1\\)"], k: 0 },
+        { q: "Bentuk grafik dari fungsi \\(f(x) = 5\\) adalah...", a: ["Garis lurus vertikal", "Garis lurus horizontal", "Parabola", "Lingkaran", "Garis miring ke atas"], k: 1 },
+        { q: "Jika grafik \\(f(x) = x^2\\) digeser 3 satuan ke atas, maka persamaan fungsi barunya adalah...", a: ["\\(g(x) = x^2 - 3\\)", "\\(g(x) = (x+3)^2\\)", "\\(g(x) = (x-3)^2\\)", "\\(g(x) = x^2 + 3\\)", "\\(g(x) = 3x^2\\)"], k: 3 },
+        { q: "Grafik \\(g(x) = f(x-2)\\) merupakan hasil pergeseran grafik \\(f(x)\\) sejauh...", a: ["2 satuan ke kiri", "2 satuan ke kanan", "2 satuan ke atas", "2 satuan ke bawah", "Tidak bergeser"], k: 1 },
+        { q: "Jika \\(f(x) = 2x\\) digeser 5 satuan ke bawah, maka persamaannya menjadi...", a: ["\\(2x + 5\\)", "\\(2(x-5)\\)", "\\(2(x+5)\\)", "\\(2x - 5\\)", "\\(5 - 2x\\)"], k: 3 },
+        { q: "Pergeseran grafik \\(f(x)\\) menjadi \\(f(x+4)\\) berarti grafik bergeser ke arah...", a: ["Sumbu X positif", "Sumbu X negatif", "Sumbu Y positif", "Sumbu Y negatif", "Diagonal"], k: 1 },
+        { q: "Diketahui \\(f(x) = x^2\\). Jika grafik digeser 1 satuan ke kanan dan 2 satuan ke bawah, maka fungsinya menjadi...", a: ["\\(g(x) = (x-1)^2 - 2\\)", "\\(g(x) = (x+1)^2 - 2\\)", "\\(g(x) = (x-1)^2 + 2\\)", "\\(g(x) = (x+2)^2 - 1\\)", "\\(g(x) = x^2 - 3\\)"], k: 0 },
+        { q: "Manakah yang merupakan fungsi linear?", a: ["\\(f(x) = x^2 + 1\\)", "\\(f(x) = 3/x\\)", "\\(f(x) = 4x - 7\\)", "\\(f(x) = \\sqrt{x}\\)", "\\(f(x) = 2^x\\)"], k: 2 },
+        { q: "Domain dari fungsi \\(f(x) = \\sqrt{x-5}\\) agar terdefinisi pada bilangan real adalah...", a: ["\\(x < 5\\)", "\\(x \\le 5\\)", "\\(x > 5\\)", "\\(x \\ge 5\\)", "\\(x \\ne 5\\)"], k: 3 },
+        { q: "Jika \\(f(x) = x + 3\\) maka \\(f(x+1)\\) adalah...", a: ["\\(x + 3\\)", "\\(x + 4\\)", "\\(x + 1\\)", "\\(2x + 3\\)", "\\(x^2 + 3\\)"], k: 1 },
+        { q: "Titik potong grafik \\(f(x) = x^2 - 9\\) dengan sumbu X adalah...", a: ["(0, -9)", "(3, 0) dan (-3, 0)", "(9, 0)", "(0, 3)", "(3, 3)"], k: 1 },
+        { q: "Jika \\(f(x) = x^2\\) dan \\(g(x) = 2\\), maka \\((f \\circ g)(x)\\) adalah...", a: ["\\(x^2\\)", "2", "4", "\\(2x^2\\)", "\\(x + 2\\)"], k: 2 }
     ];
 
     let timer;
     let tabPindahCount = 0;
+    let quizActive = false;
 
-    // FITUR ANTI CONTEK
+    function showModal(config) {
+        const overlay = document.getElementById('modal-overlay');
+        const title = document.getElementById('modal-title');
+        const desc = document.getElementById('modal-desc');
+        const icon = document.getElementById('modal-icon');
+        const btnPrimary = document.getElementById('modal-btn-primary');
+        const actions = document.getElementById('modal-actions');
+        
+        title.innerText = config.title;
+        desc.innerText = config.desc;
+        btnPrimary.innerText = config.btnText || "OK";
+        btnPrimary.className = `flex-1 py-2 rounded-lg font-bold text-white transition-all ${config.btnClass || 'bg-indigo-600'}`;
+        
+        while(actions.children.length > 1) actions.removeChild(actions.lastChild);
+
+        if(config.showCancel) {
+            const btnCancel = document.createElement('button');
+            btnCancel.innerText = config.cancelText || "Batal";
+            btnCancel.className = "flex-1 py-2 rounded-lg font-bold bg-gray-100 text-gray-700 hover:bg-gray-200 transition-all";
+            btnCancel.onclick = () => { overlay.style.display = 'none'; };
+            actions.insertBefore(btnCancel, btnPrimary);
+        }
+
+        icon.innerHTML = config.icon || '';
+        btnPrimary.onclick = () => {
+            overlay.style.display = 'none';
+            if(config.onConfirm) config.onConfirm();
+        };
+
+        overlay.style.display = 'flex';
+    }
+
     window.onblur = function() {
-        if (document.getElementById('quizSection').style.display === 'block') {
+        if (quizActive) {
             tabPindahCount++;
-            if (tabPindahCount >= 2) {
-                alert("PELANGGARAN: Anda keluar halaman lebih dari sekali. Kuis dihentikan otomatis!");
-                hitungDanTampilkanHasil();
+            if (tabPindahCount >= 3) {
+                showModal({
+                    title: "Kuis Dihentikan",
+                    desc: "Anda telah keluar halaman sebanyak 3 kali. Hasil Anda akan langsung dihitung.",
+                    btnText: "LIHAT HASIL",
+                    btnClass: "bg-red-600",
+                    onConfirm: () => hitungDanTampilkanHasil()
+                });
             } else {
-                alert("PERINGATAN: Dilarang membuka tab lain saat kuis berlangsung!");
+                showModal({
+                    title: "Peringatan Anti-Contek",
+                    desc: `Dilarang berpindah tab! Pelanggaran: ${tabPindahCount}/3`,
+                    btnText: "SAYA MENGERTI",
+                    btnClass: "bg-amber-600",
+                    icon: `<div class="bg-amber-100 p-3 rounded-full"><svg class="w-8 h-8 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg></div>`
+                });
             }
         }
     };
 
     function mulaiKuis() {
-        const nama = document.getElementById('userName').value;
-        if (!nama.trim()) { alert("Silakan isi nama Anda terlebih dahulu!"); return; }
-        
-        document.getElementById('landingSection').style.display = 'none';
-        document.getElementById('quizSection').style.display = 'block';
+        const nama = document.getElementById('userName').value.trim();
+        if (!nama) {
+            showModal({ title: "Nama Belum Diisi", desc: "Silakan masukkan nama Anda untuk memulai latihan.", btnText: "OKE" });
+            return;
+        }
+
+        document.getElementById('landingSection').classList.add('hidden');
+        document.getElementById('quizSection').classList.remove('hidden');
+        quizActive = true;
 
         let html = "";
         soalData.forEach((s, i) => {
-            html += `<div class='card'><b>${i+1}. ${s.q}</b><br>`;
+            html += `<div class='bg-white p-4 rounded-xl border border-gray-100 shadow-sm'>
+                        <div class='text-gray-800 font-semibold mb-4 leading-relaxed'>
+                            <span class="inline-block bg-indigo-100 text-indigo-700 w-8 h-8 text-center leading-8 rounded-lg mr-2">${i+1}</span>
+                            ${s.q}
+                        </div>
+                        <div class='grid grid-cols-1 gap-3'>`;
             s.a.forEach((opt, idx) => {
-                html += `<label class='option'><input type='radio' name='q${i}' value='${idx}'> ${String.fromCharCode(65+idx)}. ${opt}</label>`;
+                const char = String.fromCharCode(65 + idx);
+                html += `<label class="relative cursor-pointer">
+                            <input type="radio" name="q${i}" value="${idx}" class="option-input hidden" onchange="updateProgress()">
+                            <div class="option-label border-2 border-gray-100 rounded-xl p-3 flex items-center hover:bg-gray-50 transition-all">
+                                <span class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-lg text-sm font-bold mr-3 text-gray-500 bg-white">${char}</span>
+                                <span class="text-gray-700 font-medium">${opt}</span>
+                            </div>
+                        </label>`;
             });
-            html += `</div>`;
+            html += `</div></div>`;
         });
         document.getElementById('isiSoal').innerHTML = html;
+        if (window.MathJax) MathJax.typeset();
 
-        let timeLeft = soalData.length * 60; // 20 menit
+        let timeLeft = 30 * 60;
         timer = setInterval(() => {
             timeLeft--;
             let min = Math.floor(timeLeft / 60);
@@ -129,15 +276,35 @@
             document.getElementById('time').innerText = `${min}:${sec < 10 ? '0'+sec : sec}`;
             if (timeLeft <= 0) { 
                 clearInterval(timer); 
-                alert("Waktu habis!"); 
-                hitungDanTampilkanHasil(); 
+                showModal({ title: "Waktu Habis", desc: "Waktu Anda telah habis. Sistem akan menghitung skor otomatis.", btnText: "OKE", onConfirm: () => hitungDanTampilkanHasil() });
             }
         }, 1000);
     }
 
+    function updateProgress() {
+        const total = soalData.length;
+        let answered = 0;
+        for (let i = 0; i < total; i++) {
+            if (document.querySelector(`input[name="q${i}"]:checked`)) answered++;
+        }
+        document.getElementById('progressBar').style.width = (answered / total) * 100 + '%';
+    }
+
+    function tampilkanKonfirmasiSelesai() {
+        showModal({
+            title: "Kirim Jawaban?",
+            desc: "Pastikan semua soal telah terjawab dengan teliti sebelum mengirim.",
+            btnText: "YA, SELESAI",
+            btnClass: "bg-emerald-600",
+            showCancel: true,
+            onConfirm: () => hitungDanTampilkanHasil()
+        });
+    }
+
     function hitungDanTampilkanHasil() {
         clearInterval(timer);
-        window.onblur = null; // Matikan deteksi tab
+        quizActive = false;
+        window.onblur = null;
 
         const nama = document.getElementById('userName').value;
         let nomorBenar = [];
@@ -146,9 +313,7 @@
         soalData.forEach((s, i) => {
             const rbg = document.getElementsByName('q' + i);
             let terpilih = -1;
-            for (let rb of rbg) {
-                if (rb.checked) terpilih = parseInt(rb.value);
-            }
+            for (let rb of rbg) { if (rb.checked) terpilih = parseInt(rb.value); }
             if (terpilih === s.k) {
                 nomorBenar.push(i + 1);
             } else {
@@ -156,37 +321,32 @@
             }
         });
 
-        const totalSkor = (nomorBenar.length / soalData.length) * 100;
+        const totalSkor = Math.round((nomorBenar.length / soalData.length) * 100);
+        document.getElementById('quizSection').classList.add('hidden');
+        document.getElementById('resultSection').classList.remove('hidden');
         document.getElementById('displaySkor').innerText = totalSkor;
-        document.getElementById('displaySkor').style.color = totalSkor < 80 ? "#e74c3c" : "#008489";
-
-        document.getElementById('quizSection').style.display = 'none';
-        document.getElementById('resultSection').style.display = 'block';
         document.getElementById('resNama').innerText = nama;
-        document.getElementById('detailList').innerHTML = 
-            `✅ <b>Nomor Benar:</b> ${nomorBenar.join(", ") || "-"}<br><br>` + 
-            `❌ <b>Nomor Salah:</b> ${nomorSalah.join(", ") || "-"}`;
+        
+        document.getElementById('detailList').innerHTML = `
+            <p>✅ <b>Nomor Benar:</b> ${nomorBenar.join(", ") || "-"}</p>
+            <p>❌ <b>Nomor Salah:</b> ${nomorSalah.join(", ") || "-"}</p>
+        `;
 
-        // PENGIRIMAN DATA LENGKAP KE GOOGLE SHEETS
-        fetch(scriptURL, { 
-            method: 'POST', 
+        // Integrasi Cloud dengan Exponential Backoff / Simple Fetch
+        fetch(scriptURL, {
+            method: 'POST',
             mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                nama: nama,
-                skor: totalSkor,
-                nomorBenar: nomorBenar.join(", "),
-                nomorSalah: nomorSalah.join(", ")
-            })
+            body: JSON.stringify({ nama, skor: totalSkor, benar: nomorBenar.join(", "), salah: nomorSalah.join(", ") })
         }).then(() => {
-            document.getElementById('statusKirim').innerText = "Data berhasil disimpan di Google Sheets!";
-            document.getElementById('statusKirim').style.color = "green";
+            const st = document.getElementById('statusKirim');
+            st.innerText = "Data berhasil disimpan di cloud ✓";
+            st.classList.replace('text-gray-400', 'text-emerald-600');
         }).catch(() => {
-            document.getElementById('statusKirim').innerText = "Gagal mengirim data.";
-            document.getElementById('statusKirim').style.color = "red";
+            const st = document.getElementById('statusKirim');
+            st.innerText = "Gagal menyimpan data ke cloud.";
+            st.classList.replace('text-gray-400', 'text-rose-600');
         });
     }
 </script>
-
 </body>
 </html>
